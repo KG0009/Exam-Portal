@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Test Creation Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #30D5C8;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        h2 {
+            color: #30D5C8;
+            font-size: 26px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #30D5C8;
+            padding-bottom: 10px;
+        }
+        .input-group {
+            margin-bottom: 25px;
+        }
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border 0.3s ease;
+        }
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            border-color: #30D5C8;
+            outline: none;
+            box-shadow: 0 0 5px rgba(48, 213, 200, 0.3);
+        }
+        .add-question, .save-test {
+            background-color: #30D5C8;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .add-question:hover, .save-test:hover {
+            background-color: #28b4a4;
+            box-shadow: 0 8px 16px rgba(48, 213, 200, 0.2);
+        }
+        .options h3 {
+            color: #30D5C8;
+            font-size: 22px;
+        }
+        .option-type {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .option-input {
+            margin-bottom: 20px;
+        }
+        .option-type input {
+            margin-right: 10px;
+        }
+        table {
+            width: 100%;
+            margin-top: 30px;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            font-size: 16px;
+            color: #333;
+        }
+        th {
+            background-color: #30D5C8;
+            color: white;
+        }
+        td img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .test-table h2 {
+            font-size: 22px;
+            color: #30D5C8;
+            margin-top: 30px;
+            border-bottom: 2px solid #30D5C8;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    Teacher Test Management
+</header>
+
+<div class="container">
+    <h2>Create a New Test</h2>
+    <div class="input-group">
+        <label for="test-title">Test Title:</label>
+        <input type="text" id="test-title" placeholder="Enter test title">
+    </div>
+    
+    <div class="input-group">
+        <label for="subject">Subject:</label>
+        <input type="text" id="subject" placeholder="Enter the subject of the test">
+    </div>
+
+    <button class="add-question" onclick="startTest()">Start Test Creation</button>
+
+    <!-- Section to add questions, displayed after test creation starts -->
+    <div id="question-section" style="display: none;">
+        <h2 id="display-title"></h2>
+        <p id="display-subject"></p>
+        <div class="input-group">
+            <label for="question">Question:</label>
+            <textarea id="question" rows="4" placeholder="Enter your question"></textarea>
+        </div>
+
+        <div class="options">
+            <h3>Options</h3>
+            <div class="input-group option-input">
+                <label for="option1">Option 1:</label>
+                <div class="option-type">
+                    <input type="radio" name="option1-type" value="text" checked onclick="toggleOptionType('option1', 'text')"> Text
+                    <input type="radio" name="option1-type" value="image" onclick="toggleOptionType('option1', 'image')"> Image
+                </div>
+                <input type="text" id="option1-text" placeholder="Enter option 1 text">
+                <input type="file" id="option1-image" style="display: none;" accept="image/*" onchange="previewImage(event, 'option1-preview')">
+                <div id="option1-preview" style="margin-top: 10px;"></div>
+            </div>
+            <div class="input-group option-input">
+                <label for="option2">Option 2:</label>
+                <div class="option-type">
+                    <input type="radio" name="option2-type" value="text" checked onclick="toggleOptionType('option2', 'text')"> Text
+                    <input type="radio" name="option2-type" value="image" onclick="toggleOptionType('option2', 'image')"> Image
+                </div>
+                <input type="text" id="option2-text" placeholder="Enter option 2 text">
+                <input type="file" id="option2-image" style="display: none;" accept="image/*" onchange="previewImage(event, 'option2-preview')">
+                <div id="option2-preview" style="margin-top: 10px;"></div>
+            </div>
+            <div class="input-group option-input">
+                <label for="option3">Option 3:</label>
+                <div class="option-type">
+                    <input type="radio" name="option3-type" value="text" checked onclick="toggleOptionType('option3', 'text')"> Text
+                    <input type="radio" name="option3-type" value="image" onclick="toggleOptionType('option3', 'image')"> Image
+                </div>
+                <input type="text" id="option3-text" placeholder="Enter option 3 text">
+                <input type="file" id="option3-image" style="display: none;" accept="image/*" onchange="previewImage(event, 'option3-preview')">
+                <div id="option3-preview" style="margin-top: 10px;"></div>
+            </div>
+            <div class="input-group option-input">
+                <label for="option4">Option 4:</label>
+                <div class="option-type">
+                    <input type="radio" name="option4-type" value="text" checked onclick="toggleOptionType('option4', 'text')"> Text
+                    <input type="radio" name="option4-type" value="image" onclick="toggleOptionType('option4', 'image')"> Image
+                </div>
+                <input type="text" id="option4-text" placeholder="Enter option 4 text">
+                <input type="file" id="option4-image" style="display: none;" accept="image/*" onchange="previewImage(event, 'option4-preview')">
+                <div id="option4-preview" style="margin-top: 10px;"></div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label for="correct-answer">Correct Answer:</label>
+            <select id="correct-answer">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+                <option value="option4">Option 4</option>
+            </select>
+        </div>
+
+        <button class="add-question" onclick="addQuestion()">Add Question</button>
+        <button class="save-test">Save Test</button>
+
+        <h2 class="test-table">Added Questions</h2>
+        <table id="questions-table">
+            <thead>
+                <tr>
+                    <th>Question</th>
+                    <th>Options</th>
+                    <th>Correct Answer</th>
+                </tr>
+            </thead>
+            <tbody id="questions-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Firebase App (the core Firebase SDK) is always required -->
+<script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js"></script>
+<!-- Firebase Database -->
+<script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-database.js"></script>
+
+<script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDHiNT1bNwJIRQA2xpxfHYmSwWi_YWfsAM",
+    authDomain: "examnexus-4b46c.firebaseapp.com",
+    databaseURL: "https://examnexus-4b46c-default-rtdb.firebaseio.com",
+    projectId: "examnexus-4b46c",
+    storageBucket: "examnexus-4b46c.appspot.com",
+    messagingSenderId: "889907228722",
+    appId: "1:889907228722:web:606ee1b0e185a2c15c8c2b",
+    measurementId: "G-35EV53YEE5"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let questions = [];
+
+    function startTest() {
+        const title = document.getElementById('test-title').value;
+        const subject = document.getElementById('subject').value;
+
+        if (!title || !subject) {
+            alert("Please enter both title and subject.");
+            return;
+        }
+
+        document.getElementById('display-title').innerText = title;
+        document.getElementById('display-subject').innerText = `Subject: ${subject}`;
+        document.getElementById('question-section').style.display = 'block';
+    }
+
+    function toggleOptionType(optionNumber, type) {
+        const textInput = document.getElementById(`${optionNumber}-text`);
+        const imageInput = document.getElementById(`${optionNumber}-image`);
+
+        if (type === 'text') {
+            textInput.style.display = 'block';
+            imageInput.style.display = 'none';
+        } else {
+            textInput.style.display = 'none';
+            imageInput.style.display = 'block';
+        }
+    }
+
+    function previewImage(event, previewId) {
+        const preview = document.getElementById(previewId);
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            preview.innerHTML = `<img src="${e.target.result}" alt="Image Preview">`;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function addQuestion() {
+        const questionText = document.getElementById('question').value;
+        const options = [];
+        for (let i = 1; i <= 4; i++) {
+            const optionType = document.querySelector(`input[name="option${i}-type"]:checked`).value;
+            const optionValue = optionType === 'text' ? document.getElementById(`option${i}-text`).value : document.getElementById(`option${i}-image`).files[0];
+            options.push({ type: optionType, value: optionValue });
+        }
+        const correctAnswer = document.getElementById('correct-answer').value;
+
+        if (!questionText || !options.length) {
+            alert("Please enter a question and options.");
+            return;
+        }
+
+        const question = {
+            question: questionText,
+            options: options,
+            correctAnswer: correctAnswer
+        };
+
+        questions.push(question);
+        displayQuestions();
+        clearInputs();
+    }
+
+    function clearInputs() {
+        document.getElementById('question').value = '';
+        for (let i = 1; i <= 4; i++) {
+            document.getElementById(`option${i}-text`).value = '';
+            document.getElementById(`option${i}-image`).value = '';
+            document.getElementById(`option${i}-preview`).innerHTML = '';
+        }
+        document.getElementById('correct-answer').value = 'option1';
+    }
+
+    function displayQuestions() {
+        const questionsBody = document.getElementById('questions-body');
+        questionsBody.innerHTML = '';
+
+        questions.forEach((q, index) => {
+            const row = `<tr>
+                <td>${q.question}</td>
+                <td>${q.options.map(opt => opt.type === 'text' ? opt.value : '<img src="' + URL.createObjectURL(opt.value) + '" alt="Option Image">').join('<br>')}</td>
+                <td>${q.correctAnswer}</td>
+            </tr>`;
+            questionsBody.innerHTML += row;
+        });
+    }
+
+    document.querySelector('.save-test').addEventListener('click', saveTest);
+
+    function saveTest() {
+        const title = document.getElementById('test-title').value;
+        const subject = document.getElementById('subject').value;
+
+        if (questions.length === 0) {
+            alert("Please add at least one question before saving.");
+            return;
+        }
+
+        const testData = {
+            title: title,
+            subject: subject,
+            questions: questions
+        };
+
+        const newTestRef = database.ref('tests').push();
+        newTestRef.set(testData)
+            .then(() => {
+                alert('Test saved successfully!');
+                clearAll();
+            })
+            .catch((error) => {
+                alert('Error saving test: ' + error.message);
+            });
+    }
+
+    function clearAll() {
+        document.getElementById('test-title').value = '';
+        document.getElementById('subject').value = '';
+        questions = [];
+        displayQuestions();
+    }
+</script>
+
+</body>
+</html>

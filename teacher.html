@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Home Page</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #30D5C8;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .test-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 15px;
+            flex: 1 0 calc(33% - 30px); /* Three cards in a row */
+            min-width: 280px; /* Ensure minimum width */
+        }
+        .test-card h3 {
+            color: #30D5C8;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .test-card p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        .view-button {
+            display: inline-block;
+            background-color: #30D5C8;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        .view-button:hover {
+            background-color: #28b4a4;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    Available Tests
+</header>
+
+<div class="container" id="tests-container">
+    <!-- Test cards will be injected here -->
+</div>
+
+<!-- Include Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.20.0/firebase-database.js"></script>
+
+<script>
+    // Your Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDHiNT1bNwJIRQA2xpxfHYmSwWi_YWfsAM",
+    authDomain: "examnexus-4b46c.firebaseapp.com",
+    databaseURL: "https://examnexus-4b46c-default-rtdb.firebaseio.com",
+    projectId: "examnexus-4b46c",
+    storageBucket: "examnexus-4b46c.appspot.com",
+    messagingSenderId: "889907228722",
+    appId: "1:889907228722:web:606ee1b0e185a2c15c8c2b",
+    measurementId: "G-35EV53YEE5"
+    };
+
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // Function to fetch tests from Firebase
+    function fetchTests() {
+        const testsRef = database.ref('tests'); // Adjust this path according to your structure
+        testsRef.on('value', (snapshot) => {
+            const testsContainer = document.getElementById('tests-container');
+            testsContainer.innerHTML = ''; // Clear previous content
+
+            snapshot.forEach((childSnapshot) => {
+                const testData = childSnapshot.val();
+                const testCard = document.createElement('div');
+                testCard.className = 'test-card';
+                testCard.innerHTML = `
+                    <h3>${testData.title}</h3>
+                    <p>Subject: ${testData.subject}</p>
+                    <p>Test Code: ${childSnapshot.key}</p>
+                    <a class="view-button" href="test-details.html?code=${childSnapshot.key}">View Test</a>
+                `;
+                testsContainer.appendChild(testCard);
+            });
+        });
+    }
+
+    // Call the fetchTests function to display tests on page load
+    window.onload = fetchTests;
+</script>
+
+</body>
+</html>

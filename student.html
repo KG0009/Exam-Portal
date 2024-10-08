@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student - Attempt Test</title>
+    <link rel="stylesheet" href="test.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Attempt Test</h2>
+        <form id="attempt-form">
+            <input type="text" id="test-code" placeholder="Enter Test Code" required>
+            <button type="submit">Get Questions</button>
+        </form>
+        <div id="question-container"></div>
+        <div id="timer"></div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHiNT1bNwJIRQA2xpxfHYmSwWi_YWfsAM",
+  authDomain: "examnexus-4b46c.firebaseapp.com",
+  databaseURL: "https://examnexus-4b46c-default-rtdb.firebaseio.com",
+  projectId: "examnexus-4b46c",
+  storageBucket: "examnexus-4b46c.appspot.com",
+  messagingSenderId: "889907228722",
+  appId: "1:889907228722:web:606ee1b0e185a2c15c8c2b",
+  measurementId: "G-35EV53YEE5"
+};
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const auth = firebase.auth();
+
+        document.getElementById('attempt-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const testCode = document.getElementById('test-code').value;
+
+            database.ref('tests/' + testCode).once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    const questions = data.questions;
+                    const duration = data.duration; // Fetch duration
+                    displayQuestions(questions, duration);
+                } else {
+                    alert('Test code not found!');
+                }
+            }).catch(error => {
+                console.error('Error fetching test:', error);
+            });
+        });
+
+        const displayQuestions = (questions, duration) => {
+            const questionContainer = document.getElementById('question-container');
+            questionContainer.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.innerHTML = `
+                    <div>${index + 1}. ${question}</div>
+                    <input type="text" placeholder="Your answer" id="answer-${index}">
+                `;
+                questionContainer.appendChild(questionElement);
+            });
+
+            const submitButton = document.createElement('button');
+            submitButton.textContent = 'Submit Answers';
+            submitButton.addEventListener('click', submitAnswers);
+            questionContainer.appendChild(submitButton);
+
+            startTimer(duration); // Start the timer with the fetched duration
+        };
+
+        const startTimer = (duration) => {
+            let timer = duration * 60; // Convert minutes to seconds
+            const timerDisplay = document.getElementById('timer');
+
+            const interval = setInterval(() => {
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+                if (--timer < 0) {
+                    clearInterval(interval);
+                    timerDisplay.textContent = "Time's up!";
+                    submitAnswers(); // Automatically submit answers when time is up
+                }
+            }, 1000);
+        };
+
+        const submitAnswers = () => {
+            const answers = [];
+            const questionContainer = document.getElementById('question-container');
+            
+            [...questionContainer.children].forEach((child, index) => {
+                const answerInput = child.querySelector(`#answer-${index}`);
+                if (answerInput) {
+                    answers.push(answerInput.value);
+                }
+            });
+            
+            console.log('Submitted answers:', answers);
+            alert('Answers submitted! (See console for details)');
+        };
+
+        auth.onAuthStateChanged(user => {
+            if (!user) {
+                window.location.href = 'login.html'; // Redirect to login if not authenticated
+            }
+        });
+    </script>
+</body>
+</html>
